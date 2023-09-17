@@ -1,4 +1,5 @@
 from flask import Flask, request
+from flask_cors import CORS, cross_origin
 from db3 import add_event_to_table, get_events_from_table
 import cohere
 import datetime, re, json
@@ -8,18 +9,17 @@ apiKey = "WX2BauearLsTYNGnSWY8SoucprcMDBYuT4Es1ZT0"
 co = cohere.Client(apiKey)
 keyWords = ["Start time:", "End time:"]
 
-# dateFormatStr = "Please schedule these events with the following format: \
-#     Title: text format\
-#     Start time: YYYY-MM-DD-HH-mm format \
-#     End time: YYYY-MM-DD-HH-mm format"
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
-dateFormatStr = "Please schedule these events in an array. Each element should have the following JSON format: \
+
+dateFormatStr = "Schedule these events in an array. Elements should have the following JSON format: \
     title: text format\
     start: YYYY-MM-DD HH:mm format \
     end: YYYY-MM-DD HH:mm format."
 
 now = datetime.datetime.now()
-nowStr = "The current date is " + now.strftime("%B %d, %Y.")
+nowStr = "The current date is " + now.strftime("%A %B %d, %Y.")
 
 # generateCalendarDates takes a prompt and returns a list of events corresponding to the prompt
 def generate_calendar_dates(prompt):
@@ -36,9 +36,7 @@ def generate_calendar_dates(prompt):
 
 # parseCalendarDates parses the response from the model and generates dates
 def parse_calendar_dates(response):
-    print(response)
-    # remove all newlines
-    # remove = re.sub('\n', '', response)
+    # print(response)
 
     # remove leading and trailing text
     leading_index = response.index('[')
@@ -46,22 +44,6 @@ def parse_calendar_dates(response):
 
     trailing_index = json_string.rfind("]") + 1
     json_string = json_string[:trailing_index]
-
-    # replace "Start time:" and "End time:"
-    # remove = remove.replace("Start time:", "|")
-    # remove = remove.replace("End time:", "|")
-
-    # split by title
-    # events = remove.split("Title:")
-
-    # remove empty string
-    # events = [x for x in events if x != '']
-
-    # split events by start time and end time
-    # events = [event.split("|") for event in events]
-
-    # strip leading and trailing whitespace
-    # events = [s.strip() for event in events for s in event]
 
     print(json_string)
 
@@ -74,15 +56,23 @@ def parse_calendar_dates(response):
   
 
 @app.route('/new', methods=['POST'])
+@cross_origin()
 def endpoint_post():
-    prompt = request.form.get('prompt')
-    n_prompt = request.form.get('negative')
+    # print("im here")
+    prompt = request.json['prompt']
+    n_prompt = request.json['negative']
+    # breakpoint()
+
+    # print(prompt)
+    # print(n_prompt)
 
     res = generate_calendar_dates(prompt + " " + n_prompt)
 
     return res
 
+
 @app.route('/get', methods=['GET'])
+@cross_origin()
 def endpoint_get():
     events = get_events_from_table()
     print(events)

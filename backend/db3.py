@@ -56,7 +56,7 @@ def get_events_from_table():
 
     try:
         with conn.cursor() as cur:
-            cur.execute('SELECT title, start, "end" FROM events')
+            cur.execute('SELECT * FROM events')
             rows = cur.fetchall()
             return rows
     except Exception as e:
@@ -81,26 +81,42 @@ def delete_all_records():
     finally:
         conn.close()
 
-if __name__ == "__main__":
+# Function to delete all records from the 'events' table
+def drop_table_events():
+    conn = psycopg2.connect(DBURL, 
+                            application_name="$ docs_simplecrud_psycopg2", 
+                            cursor_factory=psycopg2.extras.RealDictCursor)
+
+    try:
+        with conn.cursor() as cur:
+            cur.execute('DROP TABLE events')
+            conn.commit()
+            logging.debug("drop table events(): status message: %s", cur.statusmessage)
+    except Exception as e:
+        logging.error("Failed to drop all events table: %s", e)
+    finally:
+        conn.close()
+
+def t_init():
     # Establish a database connection
-    conn = conn()
+    connection = conn()
     psycopg2.extras.register_uuid()
 
     # Create a table named "events" with columns "id," "title," "start," and "end"
-    with conn.cursor() as cur:
+    with connection.cursor() as cur:
         cur.execute("""
             CREATE TABLE IF NOT EXISTS events (
-                id SERIAL PRIMARY KEY,
+                id SERIAL PRIMARY KEY NOT NULL,
                 title TEXT NOT NULL,
                 start STRING NOT NULL,
                 "end" STRING NOT NULL
             )
         """)
         logging.debug("create_events_table(): status message: %s", cur.statusmessage)
-        conn.commit()
+        connection.commit()
 
     # Insert a sample event into the "events" table
-    add_event_to_table("Sample Event", "2023-09-22 10:00:00", "2023-09-22 12:00:00")
+    # add_event_to_table("Sample Event", "2023-09-22 10:00:00", "2023-09-22 12:00:00")
 
     # Print the contents of the "events" table
     '''with conn.cursor() as cur:
@@ -111,9 +127,13 @@ if __name__ == "__main__":
     '''
 
     # Delete all records from the "events" table
-    #delete_all_records()
-
-    get_events_from_table()
+    #delete_all_records(
 
     # Close the database connection
-    conn.close()
+    connection.close()
+
+if __name__ == "__main__":
+    t_init()
+    # delete_all_records()
+    # get_events_from_table()
+    # drop_table_events()

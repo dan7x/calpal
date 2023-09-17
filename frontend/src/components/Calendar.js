@@ -23,28 +23,28 @@ const DragAndDropCalendar = withDragAndDrop(Calendar);
 
 function CalendarPal() {
     const [events, setEvents] = useState([
-        {
-            id: 7,
-            title: 'Event 1',
-            start: new Date(2023, 8, 20, 10, 0), // Year, Month (0-indexed), Day, Hour, Minute
-            end: new Date(2023, 8, 20, 12, 0),
-        },
-        {
-            id: 8,
-            title: 'gtbtgtgb 2',
-            start: new Date(2023, 8, 21, 14, 0),
-            end: new Date(2023, 8, 21, 16, 0),
-        },
-        {
-            id: 9,
-            title: 'gtbtgtgb 2',
-            start: new Date(2023, 8, 21, 14, 0),
-            end: new Date(2023, 8, 21, 16, 0),
-        },
+        // {
+        //     id: 7,
+        //     title: 'Event 1',
+        //     start: new Date(2023, 8, 20, 10, 0), // Year, Month (0-indexed), Day, Hour, Minute
+        //     end: new Date(2023, 8, 20, 12, 0),
+        // },
+        // {
+        //     id: 8,
+        //     title: 'gtbtgtgb 2',
+        //     start: new Date(2023, 8, 21, 14, 0),
+        //     end: new Date(2023, 8, 21, 16, 0),
+        // },
+        // {
+        //     id: 9,
+        //     title: 'gtbtgtgb 2',
+        //     start: new Date(2023, 8, 21, 14, 0),
+        //     end: new Date(2023, 8, 21, 16, 0),
+        // },
     ]);
 
     const eventList = events.map((e) => (
-        <div class="shadow p-3 mb-5 bg-white rounded-9" style={{margin: '30px'}}>
+        <div className="shadow p-3 mb-5 bg-white rounded-9" style={{margin: '30px'}}>
             <p><b>{e.title}</b></p>
             <div>
                 <p>Begins:</p>

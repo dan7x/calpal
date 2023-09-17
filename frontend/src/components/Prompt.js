@@ -2,12 +2,20 @@ import { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
+import Spinner from 'react-bootstrap/Spinner';
+import moment from 'moment';
+import 'moment-timezone';
+
+
+const API_CALLS = "http://127.0.0.1:5001";
 
 
 function PromptForm({ setEvents }) {
     const [show, setShow] = useState(false);
     const [formPrompt, setPrompt] = useState('');
     const [formNegative, setNegative] = useState('');
+
+    const [buttonBusy, setBBusy] = useState(false);
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
@@ -20,30 +28,87 @@ function PromptForm({ setEvents }) {
         setNegative(e.target.value);
     }
 
+    const refreshCalendar = () => {
+        let getRequestOptions = {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json', 
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Credentials': true}
+        };
+
+        fetch(API_CALLS + '/get', getRequestOptions)
+        .then(response => response.json())
+        .then(data => {
+            console.log("completed get. here's ur data:");
+            console.log(data);
+
+            let evload = data.map((e) => (
+                {   
+                    id: e.id,
+                    title: e.title,
+                    start: moment(e.start, "YYYY-MM-DD HH:mm:ss").tz("America/New_York").toDate(),
+                    end: moment(e.end, "YYYY-MM-DD HH:mm:ss").tz("America/New_York").toDate()
+                }
+            )
+            );
+
+            console.log(evload);
+            setEvents(evload);
+
+            handleClose();
+            setBBusy(false);
+        });
+    }
+
     const handleSubmit = (event) => {
+        if (buttonBusy){
+            return;
+        }
+        setBBusy(true);
+
         event.preventDefault();
 
         console.log(formPrompt);
         console.log(formNegative);
 
-        handleClose();
-
         // API call
+        let payload = {'prompt': formPrompt, 'negative': formNegative};
 
-        setEvents([
-            {
-                id: 4,
-                title: 'Event 1',
-                start: new Date(2023, 8, 22, 10, 0), // Year, Month (0-indexed), Day, Hour, Minute
-                end: new Date(2023, 8, 20, 12, 0),
-            },
-            {
-                id: 5,
-                title: 'gtbtgtgb 2',
-                start: new Date(2023, 8, 23, 14, 0),
-                end: new Date(2023, 8, 21, 16, 0),
-            },
-        ]);
+        let requestOptions = {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json', 
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Credentials': true}, 
+            body: JSON.stringify(payload)
+        };
+    
+        console.log("making post call.")
+        fetch(API_CALLS + '/new', requestOptions)
+        .then(response => response.json())
+        .then( _ => {
+            console.log("completed post. doing get.");
+            refreshCalendar();
+        });
+          
+
+        
+        //     {
+        //         id: 4,
+        //         title: 'Event 1',
+        //         start: new Date(2023, 8, 22, 10, 0), // Year, Month (0-indexed), Day, Hour, Minute
+        //         end: new Date(2023, 8, 20, 12, 0),
+        //     },
+        //     {
+        //         id: 5,
+        //         title: 'gtbtgtgb 2',
+        //         start: new Date(2023, 8, 23, 14, 0),
+        //         end: new Date(2023, 8, 21, 16, 0),
+        //     },
+        // ]);
     };
 
   return (
@@ -89,11 +154,11 @@ function PromptForm({ setEvents }) {
 
             </Modal.Body>
             <Modal.Footer>
-            <Button variant="secondary" onClick={handleClose}>
+            <Button variant="secondary" onClick={handleClose} disabled={buttonBusy}>
                 Close
             </Button>
-            <Button variant="primary" type="submit">
-                Save Changes
+            <Button variant="primary" type="submit" disabled={buttonBusy}>
+                {buttonBusy ? <Spinner animation="border" /> : "Let's Go!"}
             </Button>
             </Modal.Footer>
         </Form>
