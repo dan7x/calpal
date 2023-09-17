@@ -47,6 +47,24 @@ def add_event_to_table(title, start, end):
     finally:
         conn.close()
 
+
+# Function to retrieve all records from the 'events' table
+def get_events_from_table():
+    conn = psycopg2.connect(DBURL, 
+                            application_name="$ docs_simplecrud_psycopg2", 
+                            cursor_factory=psycopg2.extras.RealDictCursor)
+
+    try:
+        with conn.cursor() as cur:
+            cur.execute('SELECT * FROM events')
+            rows = cur.fetchall()
+            return rows
+    except Exception as e:
+        logging.error("Failed to retrieve events from the table: %s", e)
+    finally:
+        conn.close()
+
+
 # Function to delete all records from the 'events' table
 def delete_all_records():
     conn = psycopg2.connect(DBURL, 
@@ -85,14 +103,17 @@ if __name__ == "__main__":
     add_event_to_table("Sample Event", "2023-09-22 10:00:00", "2023-09-22 12:00:00")
 
     # Print the contents of the "events" table
-    with conn.cursor() as cur:
+    '''with conn.cursor() as cur:
         cur.execute("SELECT * FROM events")
         rows = cur.fetchall()
         for row in rows:
             print(row)
+    '''
 
     # Delete all records from the "events" table
     #delete_all_records()
+
+    get_events_from_table()
 
     # Close the database connection
     conn.close()
