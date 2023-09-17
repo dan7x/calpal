@@ -7,10 +7,15 @@ apiKey = "WX2BauearLsTYNGnSWY8SoucprcMDBYuT4Es1ZT0"
 co = cohere.Client(apiKey)
 keyWords = ["Start time:", "End time:"]
 
-dateFormatStr = "Please schedule these events with the following format: \
+# dateFormatStr = "Please schedule these events with the following format: \
+#     Title: text format\
+#     Start time: YYYY-MM-DD-HH-mm format \
+#     End time: YYYY-MM-DD-HH-mm format"
+
+dateFormatStr = "Please schedule these events in an array. Each element should have the following JSON format: \
     Title: text format\
-    Start time: YYYY-MM-DD-HH-mm format \
-    End time: YYYY-MM-DD-HH-mm format"
+    Start time: YYYY-MM-DD HH:mm format \
+    End time: YYYY-MM-DD HH:mm format."
 
 now = datetime.datetime.now()
 nowStr = "The current date is " + now.strftime("%B %d, %Y.")
@@ -28,7 +33,7 @@ def generate_calendar_dates(prompt):
 
 # parseCalendarDates parses the response from the model and generates dates
 def parse_calendar_dates(response):
-    # print(response)
+    print(response)
     # remove all newlines
     remove = re.sub('\n', '', response)
 
@@ -87,7 +92,7 @@ def flask_app():
     # print(prompt)
     # print(n_prompt)
 
-    res = generate_calendar_dates(prompt + ". " + n_prompt)
+    res = generate_calendar_dates(prompt + " " + n_prompt)
 
     return res
 
