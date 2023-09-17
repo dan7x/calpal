@@ -29,16 +29,18 @@ function PromptForm({ setEvents }) {
         handleClose();
 
         // API call
-        
+
         setEvents([
             {
+                id: 4,
                 title: 'Event 1',
-                start: new Date(2023, 8, 20, 10, 0), // Year, Month (0-indexed), Day, Hour, Minute
+                start: new Date(2023, 8, 22, 10, 0), // Year, Month (0-indexed), Day, Hour, Minute
                 end: new Date(2023, 8, 20, 12, 0),
             },
             {
+                id: 5,
                 title: 'gtbtgtgb 2',
-                start: new Date(2023, 8, 21, 14, 0),
+                start: new Date(2023, 8, 23, 14, 0),
                 end: new Date(2023, 8, 21, 16, 0),
             },
         ]);
@@ -47,7 +49,7 @@ function PromptForm({ setEvents }) {
   return (
     <>
         <Button variant="primary" onClick={handleShow}>
-            Launch demo modal
+            + Make Plans 
         </Button>
 
         <Modal show={show} onHide={handleClose}>

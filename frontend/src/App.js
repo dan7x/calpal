@@ -12,32 +12,13 @@ import {
   Text,
   Alert,
 } from 'react-native';
-
-const localizer = momentLocalizer(moment);
+import CalendarPal from './components/Calendar';
 
 function App() {
-    const [events, setEvents] = useState([
-        // {
-        //   title: 'Event 1',
-        //   start: new Date(2023, 8, 20, 10, 0), // Year, Month (0-indexed), Day, Hour, Minute
-        //   end: new Date(2023, 8, 20, 12, 0),
-        // },
-        // {
-        //   title: 'gtbtgtgb 2',
-        //   start: new Date(2023, 8, 21, 14, 0),
-        //   end: new Date(2023, 8, 21, 16, 0),
-        // },
-    ]);
     
     return (
         <div className="App">
-            <div style={{ padding: '20px' }}>
-                <h1>Calendar App</h1>
-                <PromptForm setEvents={setEvents} />
-                <div style={{ height: '500px' }}>
-                    <Calendar localizer={localizer} events={events} startAccessor="start" endAccessor="end" />
-                </div>
-            </div>
+            <CalendarPal />
         </div>
     );
 }
