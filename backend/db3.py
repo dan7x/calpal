@@ -56,7 +56,7 @@ def get_events_from_table():
 
     try:
         with conn.cursor() as cur:
-            cur.execute('SELECT * FROM events')
+            cur.execute('SELECT title, start, "end" FROM events')
             rows = cur.fetchall()
             return rows
     except Exception as e:
