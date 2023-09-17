@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 flask = "*"
+cohere = "*"
 psycopg2-binary = "*"
 
 [dev-packages]

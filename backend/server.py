@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 import cohere
 import datetime, re, json
 
@@ -15,7 +15,6 @@ dateFormatStr = "Please schedule these events with the following format: \
 now = datetime.datetime.now()
 nowStr = "The current date is " + now.strftime("%B %d, %Y.")
 
-@app.route('/')
 # generateCalendarDates takes a prompt and returns a list of events corresponding to the prompt
 def generate_calendar_dates(prompt):
     response = co.generate(
@@ -29,7 +28,7 @@ def generate_calendar_dates(prompt):
 
 # parseCalendarDates parses the response from the model and generates dates
 def parse_calendar_dates(response):
-    print(response)
+    # print(response)
     # remove all newlines
     remove = re.sub('\n', '', response)
 
@@ -40,13 +39,9 @@ def parse_calendar_dates(response):
     trailing_index = remove.rfind("End time: ") + 26
     remove = remove[:trailing_index]
 
-    print(remove)
-
     # replace "Start time:" and "End time:"
     remove = remove.replace("Start time:", "|")
     remove = remove.replace("End time:", "|")
-
-    print(remove)
 
     # split by title
     events = remove.split("Title:")
@@ -69,12 +64,12 @@ def generate_JSON(events):
         ds = {
             "title": events[i],
             "start": events[i+1],
-            "end": events[i+1],
+            "end": events[i+2],
         }
         events_dict.append(ds)
 
     events_json = json.dumps(events_dict)
-    print(events_json)
+    # print(events_json)
     return events_json
 
 
@@ -84,5 +79,19 @@ def filter_dates (s):
             return True
     return False    
 
+@app.route('/new', methods=['POST', 'GET'])
+def flask_app():
+    prompt = request.form.get('prompt')
+    n_prompt = request.form.get('negative')
+
+    # print(prompt)
+    # print(n_prompt)
+
+    res = generate_calendar_dates(prompt + ". " + n_prompt)
+
+    return res
+
+if __name__ == "__main__":
+    app.run(debug=True, port=5001)
 
 # generate_calendar_dates("I like to game at night. I also have a work meeting at 5pm")

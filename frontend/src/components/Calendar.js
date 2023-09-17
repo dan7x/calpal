@@ -55,14 +55,6 @@ function CalendarPal() {
         </div>
     ));
 
-    // const eventItems = events.map( (e) => {
-    //     <div class="shadow p-3 mb-5 bg-white rounded">
-    //         <p>bort</p>
-    //         <p><b>{e.title}</b></p>
-    //         <p>{e.start} - {e.end}</p>
-    //     </div>
-    // });
-
     const moveEvent = useCallback(
         ({ event, start, end, isAllDay: droppedOnAllDaySlot = false }) => {
           const { allDay } = event
